@@ -6,7 +6,6 @@ include_directories(include)
 
 add_library(utils src/utils.c)
 
-
 add_executable(main_cpu_program src/main_cpu_program.c)
 target_link_libraries(main_cpu_program utils)
 
