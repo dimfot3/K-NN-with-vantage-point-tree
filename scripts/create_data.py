@@ -29,9 +29,9 @@ def get_args(argv):
 
 def main(num, dim, opt):
     if(opt==1):
-        mat = np.random.rand(num, dim) * 1000
+        mat = -500 + np.random.rand(num, dim) * 1000
     elif(opt==2):
-        mat = mat = np.random.normal(0, 1000, [num,dim])
+        mat = np.random.normal(0, 1000, [num,dim])
     elif(opt==3):
         mat = np.random.exponential(scale=1000, size=[num, dim])
     mat = mat.astype('float32')
