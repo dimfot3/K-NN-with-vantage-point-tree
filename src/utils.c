@@ -115,6 +115,8 @@ float quickselect(float* arr, int left, int right, int k)
 {
     float b = -1, a = -1;
     int n = right - left + 1;
+    if(n == 0)
+        return 0;
     float* temp_arr = malloc(sizeof(float) * n);
     memcpy(temp_arr, arr, n * sizeof(float));
     
@@ -171,12 +173,10 @@ void read_preorder(struct vp_point *node, int root)
 {
     if (node == NULL)
         return;
-    
     printf("%d ", node->idx);
-
     read_preorder(node->left, 0);
-
     read_preorder(node->right, 0);
+    //creates a new line after whole printing
     if(root)
         printf("\n");
 }

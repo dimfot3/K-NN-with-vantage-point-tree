@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     int* idxs = malloc(sizeof(int)*points.num);
     for(int i = 0; i < points.num; i++)
         idxs[i] = i;
-    struct vp_point *root = serial_vp_create(&points, idxs, points.num);
+    struct vp_point *root = serial_vp_create(&points, idxs, points.num, NULL);
     read_preorder(root, 1);
     return 0;
 }
