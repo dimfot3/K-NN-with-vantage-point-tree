@@ -1,5 +1,5 @@
 binarytree>=6.4.0
-numpy>=1.17.4
+numpy>=1.19.4
 pandas>=1.1.5
 torch>=1.7.1
 torchvision>=0.8.2
