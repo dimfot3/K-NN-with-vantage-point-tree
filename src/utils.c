@@ -62,6 +62,13 @@ void print_points(struct points_struct *points)
     printf("-----------------------------------------------------------\n");
 }
 
+void print_point(float* p, int d)
+{
+    for(int i = 0; i < d; i++)
+        printf("%f ", p[i]);
+    printf("\n");
+}
+
 float calculate_euk_distance(float *p1, float *p2, int d)
 {
     double sum = 0;
@@ -77,7 +84,99 @@ float calculate_man_distance(float *p1, float *p2, int d)
     double sum = 0;
     for(int i = 0; i < d; i++)
     {
-        sum += abs(p1[i] - p2[i]);
+        sum += fabs(p1[i] - p2[i]);
     }
     return sum;
+}
+
+void swap(float* a, float* b)
+{
+    float temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+float partition(float *arr, int l, int r)
+{
+    float lst = arr[r];
+    int i = l, j = l;
+    while (j < r) {
+        if (arr[j] < lst) {
+            swap(&arr[i], &arr[j]);
+            i++;
+        }
+        j++;
+    }
+    swap(&arr[i], &arr[r]);
+    return i;
+}
+
+float quickselect(float* arr, int left, int right, int k)
+{
+    float b = -1, a = -1;
+    int n = right - left + 1;
+    float* temp_arr = malloc(sizeof(float) * n);
+    memcpy(temp_arr, arr, n * sizeof(float));
+    
+    while (left <= right) {
+        int pivotIndex = partition(temp_arr, left, right);
+        if (pivotIndex == k)
+            b = temp_arr[pivotIndex];
+        else if(pivotIndex == k-1)
+            a = temp_arr[pivotIndex];
+        if (pivotIndex >= k)
+            right = pivotIndex - 1;
+        else
+            left = pivotIndex + 1;
+        if(b != -1 && a != -1)
+            break;
+    }
+    free(temp_arr);
+    //if the number of elements is odd return the k-1 element
+    if(n % 2 == 1)
+    {
+        return a;
+    }
+    //if the number of elements is even return the mean of k-1 and k.
+    return (b+a)/2;
+}
+
+float* calculateDistances(struct points_struct *points, float *pivot, int* idxs, int n)
+{
+    int d = points->dim;
+    float* dist_arr = (float*)malloc(sizeof(float) * n);
+    for(int i = 0; i < n; i++)
+    {
+        dist_arr[i] = calculate_man_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
+    }
+    return dist_arr;
+}
+
+void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idxs, int **right_idxs, int *n_l, int *n_r)
+{
+    *right_idxs = (int*) malloc(sizeof(int) * n);
+    *left_idxs = (int*) malloc(sizeof(int) * n);
+    *n_l = 0;
+    *n_r = 0;
+    for(int i = 0; i < n; i++)
+    {
+        if(dists_arr[i] <= median)
+            (*left_idxs)[(*n_l)++] = idxs[i];
+        else
+            (*right_idxs)[(*n_r)++] = idxs[i];
+    }
+}
+
+void read_preorder(struct vp_point *node, int root)
+{
+    if (node == NULL)
+        return;
+    
+    printf("%d ", node->idx);
+
+    read_preorder(node->left, 0);
+
+    read_preorder(node->right, 0);
+    if(root)
+        printf("\n");
 }

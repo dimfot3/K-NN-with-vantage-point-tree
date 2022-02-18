@@ -46,7 +46,6 @@ TEST(distance, manhattan) {
     float p2[] = {2, 5, 2, -1, 3, 3, 2};
     float dist = calculate_man_distance(p1, p2, d);
     EXPECT_FLOAT_EQ(dist, 18);
-     
 };
 
 TEST(distance, eucledean) {
@@ -55,7 +54,6 @@ TEST(distance, eucledean) {
     float p2[] = {2, 5, 2, -1, 3, 3, 2};
     float dist = calculate_euk_distance(p1, p2, d);
     EXPECT_FLOAT_EQ(dist, 11.04536102);
-     
 };
 
 int main(int argc, char** argv)

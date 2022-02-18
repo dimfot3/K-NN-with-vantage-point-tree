@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <utils.h>
+#include <serial_vp_tree.h>
 
 int main(int argc, char** argv)
 {
@@ -15,7 +16,13 @@ int main(int argc, char** argv)
 
     parse_arguments(argc, argv, &args);
     read_points(args.path, &points);
-
+    
     print_points(&points);
+
+    int* idxs = malloc(sizeof(int)*points.num);
+    for(int i = 0; i < points.num; i++)
+        idxs[i] = i;
+    struct vp_point *root = serial_vp_create(&points, idxs, points.num);
+    read_preorder(root, 1);
     return 0;
 }
