@@ -24,5 +24,7 @@ int main(int argc, char** argv)
         idxs[i] = i;
     struct vp_point *root = serial_vp_create(&points, idxs, points.num, NULL);
     read_preorder(root, 1);
+
+    reallocate_tree(root);
     return 0;
 }

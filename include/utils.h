@@ -180,4 +180,12 @@ void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idx
  */
 void read_preorder(struct vp_point *node, int root);
 
+/**
+ * @brief this functions reallocates the tree
+ * 
+ * @param node an node of the tree
+ * @return void
+ */
+void reallocate_tree(struct vp_point *node);
+
 #endif

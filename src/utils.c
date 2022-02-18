@@ -149,7 +149,7 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
     float* dist_arr = (float*)malloc(sizeof(float) * n);
     for(int i = 0; i < n; i++)
     {
-        dist_arr[i] = calculate_man_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
+        dist_arr[i] = calculate_euk_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
     }
     return dist_arr;
 }
@@ -167,16 +167,31 @@ void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idx
         else
             (*right_idxs)[(*n_r)++] = idxs[i];
     }
+    //reallocing extra memory space for left and right idxes
+    *left_idxs = (int*) realloc(*left_idxs, sizeof(int) * *n_l);
+    *right_idxs = (int*) realloc(*right_idxs, sizeof(int) * *n_r);
 }
 
 void read_preorder(struct vp_point *node, int root)
 {
     if (node == NULL)
         return;
+    if(root)
+        printf("Preorder: ");
     printf("%d ", node->idx);
     read_preorder(node->left, 0);
     read_preorder(node->right, 0);
     //creates a new line after whole printing
     if(root)
         printf("\n");
+}
+
+
+void reallocate_tree(struct vp_point *node)
+{
+    if(node == NULL)
+        return;
+    reallocate_tree(node->left);
+    reallocate_tree(node->right);
+    free(node);
 }
