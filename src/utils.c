@@ -8,10 +8,11 @@
 #include <stdio.h>
 #include <utils.h>
 #include <math.h>
+#include <omp.h>
 
 void parse_arguments(int argc, char** argv, struct ses_args *args)
 {
-    
+
     if(argc < 3)
     {
         printf("Usage: `./main_cpu_program path mode` where path is the binay file with points and mode 0:sequential, 1:prallel in cpu, 2:fair work per thread\n");
@@ -19,7 +20,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, "../data/dt_2_10_3.dat");
         args->mode = 0;
-    }   
+    }
     else
     {
         args->path = (char*) malloc(sizeof(char)*50);
@@ -40,7 +41,7 @@ void read_points(char *path, struct points_struct *points)
         printf( "Error loading the file with paht %s\n",  path) ;
         exit(0);
     }
-    fread(info,sizeof(float),2,fp); 
+    fread(info,sizeof(float),2,fp);
     printf("Number of points: %1.0f\nDimension of points: %1.0f\n", info[0], info[1]);
     points->num = (int) info[0];
     points->dim = (int) info[1];
@@ -58,7 +59,7 @@ void print_points(struct points_struct *points)
         for(int j = 0; j < points->dim; j++)
             printf("%3.2f ", points->points_arr[i * d + j]);
         printf("\n");
-    }   
+    }
     printf("-----------------------------------------------------------\n");
 }
 
@@ -119,7 +120,7 @@ float quickselect(float* arr, int left, int right, int k)
         return 0;
     float* temp_arr = malloc(sizeof(float) * n);
     memcpy(temp_arr, arr, n * sizeof(float));
-    
+
     while (left <= right) {
         int pivotIndex = partition(temp_arr, left, right);
         if (pivotIndex == k)
@@ -147,6 +148,18 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
 {
     int d = points->dim;
     float* dist_arr = (float*)malloc(sizeof(float) * n);
+    for(int i = 0; i < n; i++)
+    {
+        dist_arr[i] = calculate_euk_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
+    }
+    return dist_arr;
+}
+
+float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n)
+{
+    int d = points->dim;
+    float* dist_arr = (float*)malloc(sizeof(float) * n);
+    #pragma omp parallel for
     for(int i = 0; i < n; i++)
     {
         dist_arr[i] = calculate_euk_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
