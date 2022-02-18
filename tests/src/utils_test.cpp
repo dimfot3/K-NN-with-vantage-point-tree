@@ -17,7 +17,7 @@ extern "C"
 TEST(load_points, t1) {
     struct points_struct points;
     char path[] = "../../data/dt_2_10_3.dat";
-    read_points(path, &points);
+    read_points(path, &points, 0);
         float gr_arr[] = {-241.9691,     139.0561,     268.2338,   -1228.0676,    -101.13516,
                             -664.4158,   -2442.0344,     -96.27045,   -484.76395,    408.71097,
                             -2087.13 ,      849.50684,  -986.0619 ,   2019.4124,    -680.8635,
@@ -54,6 +54,18 @@ TEST(distance, eucledean) {
     float p2[] = {2, 5, 2, -1, 3, 3, 2};
     float dist = calculate_euk_distance(p1, p2, d);
     EXPECT_FLOAT_EQ(dist, 11.04536102);
+};
+
+TEST(quickselect, odd) {
+    float arr[] = {2, -4, 2, 1, -3, 2, 5};
+    float median = quickselect(arr, 0, 6, 4);
+    EXPECT_FLOAT_EQ(median, 2);
+};
+
+TEST(quickselect, even) {
+    float arr[] = {2, -4, 2, 1, -3, 2, 5, 0};
+    float median = quickselect(arr, 0, 7, 4);
+    EXPECT_FLOAT_EQ(median, 1.5);
 };
 
 int main(int argc, char** argv)

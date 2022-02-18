@@ -13,7 +13,7 @@ struct vp_point* serial_vp_create(struct points_struct* points, int* idxs,  int 
         return NULL;
     int d = points->dim;
 
-    //pick vantage point
+    //pick vantage point (the first one)
     float * vp = &(points->points_arr[idxs[0] * d]);
     n = n - 1;
 

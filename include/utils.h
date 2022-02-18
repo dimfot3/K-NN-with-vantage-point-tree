@@ -51,6 +51,18 @@ struct vp_point
 };
 
 /**
+ * @brief this is a C implementation of vector for int
+ * 
+ * @param arr  pointer array of integers
+ * @param n  number of elements
+ **/
+struct int_vector
+{
+    int *arr;
+    int n;
+};
+
+/**
  * @brief this functions reads from argv the arguments for the session
  * 
  * @param argc number of points of arguments
@@ -66,7 +78,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args);
  * @param points basic structure that hold the points
  * @return void
  **/
-void read_points(char *path, struct points_struct *points);
+void read_points(char *path, struct points_struct *points, int verbose);
 
 
 /**
@@ -172,13 +184,33 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
 void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idxs, int **right_idxs, int *n_l, int *n_r);
 
 /**
- * @brief function that reads binary tree in preorder
+ * @brief function that reads binary tree in preorder and saves them in int_vector struct
  * 
  * @param node pointer to the node of tree
  * @param root this is a c boolean 0:node, 1:root
+ * @param pre_arr the struct where to save the preorder form
+ * @param n the number of elements the struct must have
  * @return void
  */
-void read_preorder(struct vp_point *node, int root);
+void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, int n);
+
+/**
+ * @brief function that compares two vectors
+ * 
+ * @param arr1 first array
+ * @param arr2 second array
+ * @return 0 if they are different else returns 1
+ */
+int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2);
+
+/**
+ * @brief function that prints an int vector
+ * 
+ * @param vec vecttor of intergers to print
+ * @return void
+ */
+void print_int_vector(struct int_vector* vec);
+
 
 /**
  * @brief this functions reallocates the tree

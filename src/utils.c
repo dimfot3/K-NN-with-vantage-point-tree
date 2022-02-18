@@ -29,7 +29,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
     }
 }
 
-void read_points(char *path, struct points_struct *points)
+void read_points(char *path, struct points_struct *points, int verbose)
 {
     //opten a file that containes the points
     FILE *fp;
@@ -41,12 +41,17 @@ void read_points(char *path, struct points_struct *points)
         exit(0);
     }
     fread(info,sizeof(float),2,fp); 
-    printf("Number of points: %1.0f\nDimension of points: %1.0f\n", info[0], info[1]);
+    
     points->num = (int) info[0];
     points->dim = (int) info[1];
     points->points_arr = (float*) malloc(sizeof(float*)*info[0]*info[1]);
     fread(points->points_arr, sizeof(float),info[0]*info[1], fp);
     fclose(fp);
+    if(verbose)
+    {   
+        print_points(points);
+        printf("Number of points: %1.0f\nDimension of points: %1.0f\n", info[0], info[1]);
+    }
 }
 
 void print_points(struct points_struct *points)
@@ -168,24 +173,25 @@ void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idx
             (*right_idxs)[(*n_r)++] = idxs[i];
     }
     //reallocing extra memory space for left and right idxes
-    *left_idxs = (int*) realloc(*left_idxs, sizeof(int) * *n_l);
+    if(n_l > 0)
+        *left_idxs = (int*) realloc(*left_idxs, sizeof(int) * *n_l);
+    if(n_r > 0)
     *right_idxs = (int*) realloc(*right_idxs, sizeof(int) * *n_r);
 }
 
-void read_preorder(struct vp_point *node, int root)
+void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, int n)
 {
     if (node == NULL)
         return;
     if(root)
-        printf("Preorder: ");
-    printf("%d ", node->idx);
-    read_preorder(node->left, 0);
-    read_preorder(node->right, 0);
-    //creates a new line after whole printing
-    if(root)
-        printf("\n");
+    {
+        pre_arr->arr = (int*) malloc(sizeof(struct int_vector) *n);
+        pre_arr->n = 0;
+    }
+    pre_arr->arr[pre_arr->n++] = node->idx;
+    read_preorder(node->left, 0, pre_arr, n);
+    read_preorder(node->right, 0, pre_arr, n);
 }
-
 
 void reallocate_tree(struct vp_point *node)
 {
@@ -194,4 +200,32 @@ void reallocate_tree(struct vp_point *node)
     reallocate_tree(node->left);
     reallocate_tree(node->right);
     free(node);
+}
+
+int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2)
+{
+    if(arr1->n != arr2->n)
+    {
+        printf("WARNING! The two vectors are have different dimensions.");
+        return 0;
+    }
+    int same = 1;
+    for(int i = 0; i < arr1->n; i++)
+    {
+        if(arr1->arr != arr2->arr)
+        {
+            same = 0;
+            break;
+        }
+    }
+    return same;
+}
+
+void print_int_vector(struct int_vector* vec)
+{
+    for(int i = 0; i < vec->n; i++)
+    {
+        printf("%d ", vec->arr[i]);
+    }
+    printf("\n");
 }

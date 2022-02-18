@@ -28,14 +28,16 @@ def create_vantage_tree(orig_points, idxs):
     return root
 
 
-data = np.fromfile('../data/dt_2_10_3.dat', dtype='float32')
+data = np.fromfile('../data/dt_1_60000_300.dat', dtype='float32')
 n, d = data[0:2].astype('int')
 data = data[2:].reshape(n, d)
 idxs = np.arange(0, n, dtype=int)
 tree = create_vantage_tree(data, idxs)
 
-print(tree)
+
 pre_order = np.array([x.value for x in tree.preorder], dtype='int32')
+real = np.loadtxt('test.txt', dtype=int).reshape(1,-1)[0]
+print((real==pre_order).all())
 f = open(f"./grount_truth.dat", 'wb')
 pre_order.tofile(f)
 f.close()
