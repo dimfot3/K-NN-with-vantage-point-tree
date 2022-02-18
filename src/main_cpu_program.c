@@ -1,6 +1,5 @@
 /**
- * Author: Fotiou Dimitrios
- * AEM: 9650
+ * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
  * @brief Here is the main program for knn implementation with vantage tree that runs on cpu exclusivly.
  **/
 

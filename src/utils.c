@@ -1,6 +1,5 @@
 /**
- * Author: Fotiou Dimitrios
- * AEM: 9650
+ * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
  * @brief Here there is the implementation of basic utilities
  **/
 
