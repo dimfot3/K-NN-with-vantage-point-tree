@@ -19,7 +19,7 @@ struct vp_point* parallel_vp_create(struct points_struct* points, int* idxs,  in
     n = n - 1;
 
     float *dists_arr = calculateDistances(points, vp, idxs + 1, n);       //in idx and n parameters we exclude current root
-    //float *dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n); 
+    //float *dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n);
     float median = quickselect(dists_arr, 0, n-1, ceil(n/2.0));
 
     int *left_idxs, *right_idxs, n_l, n_r;
@@ -33,9 +33,9 @@ struct vp_point* parallel_vp_create(struct points_struct* points, int* idxs,  in
     node->thresshold = median;
     #pragma omp parallel
     #pragma omp task
-    node->left = serial_vp_create(points, left_idxs, n_l, node);
+    node->left = parallel_vp_create(points, left_idxs, n_l, node);
     #pragma omp task
-    node->right = serial_vp_create(points, right_idxs,  n_r, node);
+    node->right = parallel_vp_create(points, right_idxs,  n_r, node);
 
     return node;
 }
