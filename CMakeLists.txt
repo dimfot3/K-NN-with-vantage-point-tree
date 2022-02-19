@@ -18,7 +18,7 @@ add_library(par_vp_tree STATIC src/parallel_vp_tree.c)
 target_link_libraries(par_vp_tree PUBLIC utils)
 
 add_executable(main_cpu_program src/main_cpu_program.c)
-target_link_libraries(main_cpu_program utils ser_vp_tree)
+target_link_libraries(main_cpu_program utils ser_vp_tree par_vp_tree)
 
 
 file(GLOB SCRIPTS
