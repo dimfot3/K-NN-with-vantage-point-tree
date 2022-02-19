@@ -1,12 +1,12 @@
 /**
- * Author: Fotiou Dimitrios
- * AEM: 9650
- * @brief Here are the declaration of serial vp tree creating utilities
+ * Author: Andreas Efstathios Eleftheriadis
+ * AEM: 9649
+ * @brief Here are the declaration of parallel vp tree creating utilities
  **/
 
 
 /**
- * @brief this function create vp tree serial with recursive procedure
+ * @brief this function create vp tree parallel with recursive procedure
  * 
  * @param points  the structure for points
  * @param idxs  the idxs of points for current iteration
