@@ -5,6 +5,8 @@
 
 #ifndef _UTILS_H
 #define _UTILS_H
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 
 /**
  * @brief this is the basic structure session arguments
@@ -29,6 +31,20 @@ struct points_struct
     int num;
     int dim;
     float* points_arr;
+};
+
+/**
+ * @brief this is a struct implementation of simple fifo queue
+ * 
+ * @param num  number of elements in queue
+ * @param idxs array of idxs, the actual queue
+ **/
+struct queue
+{
+    int num;
+    int* queue;
+    float tau;
+    int next_idx;
 };
 
 /**
@@ -210,6 +226,13 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2);
  */
 void print_int_vector(struct int_vector* vec);
 
+/**
+ * @brief function that prints knn neighbors
+ * 
+ * @param neibs the array of neibor idxs
+ * @return void
+ */
+void print_knn(int *neibs, int k);
 
 /**
  * @brief this functions reallocates the tree
@@ -218,5 +241,18 @@ void print_int_vector(struct int_vector* vec);
  * @return void
  */
 void reallocate_tree(struct vp_point *node);
+
+/**
+ * @brief this functions saves the execution times of a session
+ * 
+ * @param mode the mode id (0: sequential, 1:parallel version 1 ....)
+ * @param num the number of points
+ * @param dim the dimension of points
+ * @param creation_time elpased time to create the vp tree
+ * @param knn_time elapsed time to search the tree for k neighbors
+ * @return void
+ */
+void save_times(int mode, int num, int dim, double creation_time, double knn_time);
+
 
 #endif

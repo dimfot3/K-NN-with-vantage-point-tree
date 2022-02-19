@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <utils.h>
 #include <math.h>
+#include <unistd.h>
 
 void parse_arguments(int argc, char** argv, struct ses_args *args)
 {
@@ -226,5 +227,26 @@ void print_int_vector(struct int_vector* vec)
     {
         printf("%d ", vec->arr[i]);
     }
+    printf("\n");
+}
+
+void save_times(int mode, int num, int dim, double creation_time, double knn_time)
+{
+    FILE *fp;
+    int file_exists = 0;
+    if( access("results.csv", F_OK ) == 0 )
+        file_exists = 1;
+    fp = fopen("results.csv", "a+");
+    if(file_exists!=1)
+        fprintf(fp, "mode,num,dim,vp_creation_time,knn_search_time\n");
+    fprintf(fp, "%d,%d,%d,%lf,%lf\n", mode, num, dim, creation_time, knn_time);
+    fclose(fp);
+}
+
+void print_knn(int *neibs, int k)
+{
+    printf("Neibors: ");
+    for(int i = 0; i < k; i++)
+        printf("%d ", neibs[i]);
     printf("\n");
 }
