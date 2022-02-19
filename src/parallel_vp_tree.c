@@ -32,10 +32,15 @@ struct vp_point* parallel_vp_create(struct points_struct* points, int* idxs,  in
     node->parent = parrent;
     node->thresshold = median;
     #pragma omp parallel
-    #pragma omp task
-    node->left = parallel_vp_create(points, left_idxs, n_l, node);
-    #pragma omp task
-    node->right = parallel_vp_create(points, right_idxs,  n_r, node);
+    {
+      #pragma omp sections nowait
+		    {
+		       #pragma omp section
+           node->left = parallel_vp_create(points, left_idxs, n_l, node);
+           #pragma omp section
+           node->right = parallel_vp_create(points, right_idxs,  n_r, node);
+         }
+    }
 
     return node;
 }
