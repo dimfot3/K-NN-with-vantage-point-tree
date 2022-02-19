@@ -16,13 +16,14 @@ int main(int argc, char** argv)
 
     parse_arguments(argc, argv, &args);
     read_points(args.path, &points);
-    
+
     print_points(&points);
 
     int* idxs = malloc(sizeof(int)*points.num);
     for(int i = 0; i < points.num; i++)
         idxs[i] = i;
     struct vp_point *root = serial_vp_create(&points, idxs, points.num, NULL);
+    //struct vp_point *root = parallel_vp_create(&points, idxs, points.num, NULL);
     read_preorder(root, 1);
 
     reallocate_tree(root);

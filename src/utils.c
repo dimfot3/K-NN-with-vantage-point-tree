@@ -38,7 +38,7 @@ void read_points(char *path, struct points_struct *points)
     fp = fopen(path, "rb");
     if ( fp == NULL )
     {
-        printf( "Error loading the file with paht %s\n",  path) ;
+        printf( "Error loading the file with path %s\n",  path) ;
         exit(0);
     }
     fread(info,sizeof(float),2,fp);
