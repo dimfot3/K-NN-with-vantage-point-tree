@@ -18,8 +18,8 @@ struct vp_point* parallel_vp_create(struct points_struct* points, int* idxs,  in
     float * vp = &(points->points_arr[idxs[0] * d]);
     n = n - 1;
 
-    float *dists_arr = calculateDistances(points, vp, idxs + 1, n);       //in idx and n parameters we exclude current root
-    //float *dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n);
+    //float *dists_arr = calculateDistances(points, vp, idxs + 1, n);       //in idx and n parameters we exclude current root
+    float *dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n);
     float median = quickselect(dists_arr, 0, n-1, ceil(n/2.0));
 
     int *left_idxs, *right_idxs, n_l, n_r;
