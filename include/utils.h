@@ -155,6 +155,16 @@ void swap(float* a, float* b);
  */
 float* calculateDistances(struct points_struct *points, float *pivot, int* idxs, int n);
 
+/**
+ * @brief calculate the distances from a vantage point in parallel using openMP 
+ * 
+ * @param points data stracture where holds all the data
+ * @param vp vantage point
+ * @param idxs idxs of points to get the distances
+ * @param n number of points
+ * @return void
+ */
+float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n);
 
 /**
  * @brief split the idxs less and more than median
@@ -169,6 +179,7 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
  * @param n_r pointer to the length of right idxs
  * @return void
  */
+ 
 void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idxs, int **right_idxs, int *n_l, int *n_r);
 
 /**
