@@ -159,6 +159,19 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
     return dist_arr;
 }
 
+float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n)
+{
+    int d = points->dim;
+    float* dist_arr = (float*)malloc(sizeof(float) * n);
+    #pragma omp parallel for
+    for(int i = 0; i < n; i++)
+    {
+        dist_arr[i] = calculate_euk_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);
+    }
+    return dist_arr;
+}
+
+
 void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idxs, int **right_idxs, int *n_l, int *n_r)
 {
     *right_idxs = (int*) malloc(sizeof(int) * n);
@@ -212,7 +225,7 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2)
     int same = 1;
     for(int i = 0; i < arr1->n; i++)
     {
-        if(arr1->arr != arr2->arr)
+        if(arr1->arr[i] != arr2->arr[i])
         {
             same = 0;
             break;
@@ -243,10 +256,12 @@ void save_times(int mode, int num, int dim, double creation_time, double knn_tim
     fclose(fp);
 }
 
-void print_knn(int *neibs, int k)
+void save_knn(int *neibs, int n)
 {
-    printf("Neibors: ");
-    for(int i = 0; i < k; i++)
-        printf("%d ", neibs[i]);
-    printf("\n");
+    FILE *fp;
+    
+    fp = fopen("neibs.txt", "w");
+    for(int i=0; i < n; i++)
+        fprintf(fp, "%d ", neibs[i]);
+    fclose(fp);
 }

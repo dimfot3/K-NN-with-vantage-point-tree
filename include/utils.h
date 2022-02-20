@@ -33,19 +33,6 @@ struct points_struct
     float* points_arr;
 };
 
-/**
- * @brief this is a struct implementation of simple fifo queue
- * 
- * @param num  number of elements in queue
- * @param idxs array of idxs, the actual queue
- **/
-struct queue
-{
-    int num;
-    int* queue;
-    float tau;
-    int next_idx;
-};
 
 /**
  * @brief this is the basic structure vantage point tree
@@ -182,6 +169,16 @@ void swap(float* a, float* b);
  */
 float* calculateDistances(struct points_struct *points, float *pivot, int* idxs, int n);
 
+/**
+ * @brief calculate the distances from a vantage point with openmp
+ * 
+ * @param points data stracture where holds all the data
+ * @param vp vantage point
+ * @param idxs idxs of points to get the distances
+ * @param n number of points
+ * @return void
+ */
+float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n);
 
 /**
  * @brief split the idxs less and more than median
@@ -227,12 +224,12 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2);
 void print_int_vector(struct int_vector* vec);
 
 /**
- * @brief function that prints knn neighbors
+ * @brief function that saves the knn to a file
  * 
  * @param neibs the array of neibor idxs
  * @return void
  */
-void print_knn(int *neibs, int k);
+void save_knn(int *neibs, int k);
 
 /**
  * @brief this functions reallocates the tree

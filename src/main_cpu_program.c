@@ -5,11 +5,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <float.h>
+#include <sys/time.h>
 #include <utils.h>
 #include <serial_vp_tree.h>
-#include <sys/time.h>
-#include <float.h>
+#include <open_mp_tree.h>
 #include <search_knn.h>
+#include <Queue.h>
+
 #define VERBOSE 0
 
 
@@ -40,35 +43,51 @@ int main(int argc, char** argv)
         printf("Preorder form: ");
         print_int_vector(&pre_arr_serial);
     }
+    //------------------------END OF SEQUENTIAL------------------------------------------
 
+    /*
     //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
-    int k = MIN(points.num, 2);   //max number of neibhors for each point
-    struct queue neibs;
-    neibs.queue = (int*) malloc(sizeof(int) * k);
+    int k = MIN(points.num, 256);   //max number of neibhors for each point
     int* total_neibs = (int*) malloc(sizeof(int) * k * points.num);
+    struct queue_node *queue_neibs;
     gettimeofday(&tk0, 0);
     for(int i = 0; i < points.num; i++)
     {
-        neibs.next_idx = 0;
-        neibs.num = 0;
-        neibs.tau = FLT_MAX;
-        knn_search(root, &points, i, k, &neibs);
-        memcpy(total_neibs + i * k, neibs.queue, sizeof(int)*k);
-        print_knn(neibs.queue, k);
+        float tau = FLT_MAX;
+        queue_neibs = NULL;
+        knn_search(root, &points, i, k, &tau, &queue_neibs);
+        queue_to_arr(queue_neibs, total_neibs + i * k, k);
+        free_queue(&queue_neibs);
     }
     gettimeofday(&tk1, 0);
-    free(neibs.queue);
+    save_knn(total_neibs, k * points.num);
     knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
+    //--------------------------------END OF KNN----------------------------------------
 
-
+    */
     switch(args.mode)
     {
         case 0:
             save_times(args.mode, points.num, points.dim, creation_time, knn_time);
             break;
+        case 1:
+            idxs = malloc(sizeof(int)*points.num);
+            for(int i = 0; i < points.num; i++)
+                idxs[i] = i;
+            gettimeofday(&t0, 0);
+            struct vp_point *opmp_root = openmp_vp_create(&points, idxs, points.num, NULL);
+            gettimeofday(&t1, 0);
+            creation_time = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_usec - t0.tv_usec) / 1000.0;
+            struct int_vector pre_arr_openmp;
+            read_preorder(opmp_root, 1, &pre_arr_openmp, points.num);
+            printf("Vantage-point tree created with OpenMP in %0.3fms\n", creation_time);
+            int comp = compare_int_vectors(&pre_arr_openmp, &pre_arr_serial);
+            if(comp == 1)
+                printf("Parallel validation with sequential were successful.\n");
+            reallocate_tree(opmp_root);  //deallocation of openmp created tree
+            break;
     }
-
     reallocate_tree(root);  //deallocation of serial created tree
     return 0;
 }

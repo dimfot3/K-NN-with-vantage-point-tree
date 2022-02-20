@@ -15,6 +15,6 @@
  * @param neib_arr the array where idxs of nearest neighbors will be saved
  * @return void
  **/
-void knn_search(struct vp_point *node, struct points_struct *points, int idx, int k, struct queue *neibs);
+void knn_search(struct vp_point *node, struct points_struct *points, int idx, int k, float* tau, struct queue_node **neibs_queue);
 
 #endif
