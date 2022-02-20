@@ -28,6 +28,7 @@ int main(int argc, char** argv)
     for(int i = 0; i < points.num; i++)
         idxs[i] = i;
     
+    //--------------------------------SERIAL SECTION----------------------------------------//
     //serial vp creation. When we run in mode 0 its time is saved, when we run in other mode this is used for validation
     struct timeval t0, t1, tk0, tk1;
     double creation_time, knn_time;
@@ -45,7 +46,8 @@ int main(int argc, char** argv)
     }
     //------------------------END OF SEQUENTIAL------------------------------------------
 
-    /*
+    
+    //--------------------------------KNN SECTION----------------------------------------//
     //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
     int k = MIN(points.num, 256);   //max number of neibhors for each point
     int* total_neibs = (int*) malloc(sizeof(int) * k * points.num);
@@ -63,15 +65,16 @@ int main(int argc, char** argv)
     save_knn(total_neibs, k * points.num);
     knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
-    //--------------------------------END OF KNN----------------------------------------
+    //--------------------------------END OF KNN----------------------------------------//
 
-    */
+    
     switch(args.mode)
     {
         case 0:
             save_times(args.mode, points.num, points.dim, creation_time, knn_time);
             break;
         case 1:
+            //--------------------------------OPENMP----------------------------------------//
             idxs = malloc(sizeof(int)*points.num);
             for(int i = 0; i < points.num; i++)
                 idxs[i] = i;
@@ -87,6 +90,11 @@ int main(int argc, char** argv)
                 printf("Parallel validation with sequential were successful.\n");
             reallocate_tree(opmp_root);  //deallocation of openmp created tree
             break;
+            //--------------------------------END OF OPENMP----------------------------------------//
+        case 2:
+            //--------------------------------MIXED VERSION----------------------------------------//
+            
+            //--------------------------------MIXED VERSION----------------------------------------//
     }
     reallocate_tree(root);  //deallocation of serial created tree
     return 0;
