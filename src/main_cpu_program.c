@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     }
     //------------------------END OF SEQUENTIAL------------------------------------------
 
-    
+    /*
     //--------------------------------KNN SECTION----------------------------------------//
     //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
     int k = MIN(points.num, 256);   //max number of neibhors for each point
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
     //--------------------------------END OF KNN----------------------------------------//
-
+    */
     
     switch(args.mode)
     {
