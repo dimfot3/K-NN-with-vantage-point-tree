@@ -2,11 +2,11 @@
 
 Here you can place the data used to execute this project. You can download them from ...
 
-link for uni var n:
+link for uni var n:https://drive.google.com/file/d/1AxasKTu2Kd39KG_8RozHASmXPDt5FcqP/view?usp=sharing
 link for uni var d:
-link for norm var n:
+link for norm var n:https://drive.google.com/file/d/11wtEDNs8QEmNlGW4caEwhp3Efwbi9bKu/view?usp=sharing
 link for norm var d:
-link for exp var n:
+link for exp var n:https://drive.google.com/file/d/1v17dxOD1CoeFeo1-OZzeIdY2o_ylhbTM/view?usp=sharing
 link for exp var d:
 
 How to download (PUT ID in 'FILEID')
