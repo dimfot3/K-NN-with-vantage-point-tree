@@ -89,6 +89,7 @@ int main(int argc, char** argv)
             if(comp == 1)
                 printf("Parallel validation with sequential were successful.\n");
             reallocate_tree(opmp_root);  //deallocation of openmp created tree
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time);
             break;
             //--------------------------------END OF OPENMP----------------------------------------//
         case 2:
