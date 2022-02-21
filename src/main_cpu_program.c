@@ -95,6 +95,7 @@ int main(int argc, char** argv)
             //--------------------------------MIXED VERSION----------------------------------------//
             
             //--------------------------------MIXED VERSION----------------------------------------//
+            break;
     }
     reallocate_tree(root);  //deallocation of serial created tree
     return 0;
