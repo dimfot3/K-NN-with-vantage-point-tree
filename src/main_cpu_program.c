@@ -30,7 +30,9 @@ int main(int argc, char** argv)
     int* idxs = malloc(sizeof(int)*points.num);
     for(int i = 0; i < points.num; i++)
         idxs[i] = i;
-    
+
+    omp_set_num_threads(args.max_threads);
+    omp_set_dynamic(0);
     //--------------------------------SERIAL SECTION----------------------------------------//
     //serial vp creation. When we run in mode 0 its time is saved, when we run in other mode this is used for validation
     struct timeval t0, t1, tk0, tk1;
@@ -54,12 +56,13 @@ int main(int argc, char** argv)
     //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
     int k = MIN(points.num, 256);   //max number of neibhors for each point
     int* total_neibs = (int*) malloc(sizeof(int) * k * points.num);
-    struct queue_node *queue_neibs;
     gettimeofday(&tk0, 0);
+
+    #pragma omp parallel for schedule(dynamic, 1)
     for(int i = 0; i < points.num; i++)
     {
         float tau = FLT_MAX;
-        queue_neibs = NULL;
+        struct queue_node *queue_neibs = NULL;
         knn_search(root, &points, i, k, &tau, &queue_neibs);
         queue_to_arr(queue_neibs, total_neibs + i * k, k);
         free_queue(&queue_neibs);
@@ -70,7 +73,7 @@ int main(int argc, char** argv)
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
     //--------------------------------END OF KNN----------------------------------------//
     */
-    
+
     switch(args.mode)
     {
         case 0:

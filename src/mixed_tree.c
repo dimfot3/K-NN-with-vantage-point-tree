@@ -19,9 +19,11 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
     float * vp = &(points->points_arr[idxs[0] * d]);
     n = n - 1;
     float *dists_arr;
-    //float *dists_arr = calculateDistances(points, vp, idxs + 1, n);       //in idx and n parameters we exclude current root
-    dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n);
-   
+    if(n * d >= THRES)
+        dists_arr = calculateDistancesParallel(points, vp, idxs + 1, n);
+    else
+        dists_arr = calculateDistances(points, vp, idxs + 1, n);
+    
     float median = quickselect(dists_arr, 0, n-1, ceil(n/2.0));
 
     int *left_idxs, *right_idxs, n_l, n_r;
@@ -33,12 +35,8 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
     free(idxs);     //dealocating idxs to avoid dynamic memory corruption as they are not used anymore
     node->parent = parrent;
     node->thresshold = median;
-
-    if(2 * n * d > THRES && live_threads < max_threads)
+    if(n * d >= 2*THRES)
     { // parallel recursive call
-      omp_set_lock(writelock);
-      (*live_threads)+=2;
-      omp_unset_lock(writelock);
       #pragma omp parallel
       {
         #pragma omp sections nowait
@@ -55,8 +53,5 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
       node->left = mixed_vp_create(points, left_idxs, n_l, node, live_threads, writelock, max_threads);
       node->right = mixed_vp_create(points, right_idxs,  n_r, node, live_threads, writelock, max_threads);
     }
-    omp_set_lock(writelock);
-    (*live_threads)-=1;
-    omp_unset_lock(writelock);
     return node;
 }

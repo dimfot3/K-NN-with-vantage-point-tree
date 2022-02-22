@@ -118,6 +118,7 @@ void free_vp_tree(struct vp_point *root);
  **/
 float calculate_euk_distance(float *p1, float *p2, int d);
 
+
 /**
  * @brief calculates manhattan distance
  * 
