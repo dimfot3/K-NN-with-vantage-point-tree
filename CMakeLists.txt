@@ -27,9 +27,13 @@ target_link_libraries(knn_search PUBLIC utils queue)
 add_library(openmp_vp_tree STATIC src/open_mp_tree.c)
 target_link_libraries(openmp_vp_tree PUBLIC utils)
 
+#mixed implementation
+add_library(mixed_vp_tree STATIC src/mixed_tree.c)
+target_link_libraries(mixed_vp_tree PUBLIC utils)
+
 #main function for serial, openmp, opencilk versions
 add_executable(main_cpu_program src/main_cpu_program.c)
-target_link_libraries(main_cpu_program utils ser_vp_tree knn_search queue openmp_vp_tree)
+target_link_libraries(main_cpu_program utils ser_vp_tree knn_search queue openmp_vp_tree mixed_vp_tree)
 
 file(GLOB SCRIPTS
   "scripts/*.sh"
