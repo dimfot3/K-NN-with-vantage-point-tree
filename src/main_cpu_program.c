@@ -102,12 +102,9 @@ int main(int argc, char** argv)
             //--------------------------------MIXED VERSION----------------------------------------//
             idxs = malloc(sizeof(int)*points.num);
             for(int i = 0; i < points.num; i++)
-                idxs[i] = i;
-            int live_threads = 1;
-            omp_lock_t writelock;
-            omp_init_lock(&writelock);
+                idxs[i] = i;        
             gettimeofday(&t0, 0);
-            struct vp_point *mixed_root = mixed_vp_create(&points, idxs,  points.num, NULL, &live_threads, &writelock, args.max_threads);
+            struct vp_point *mixed_root = mixed_vp_create(&points, idxs,  points.num, NULL);
             gettimeofday(&t1, 0);
             creation_time = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_usec - t0.tv_usec) / 1000.0;
             struct int_vector pre_arr_mixed;

@@ -9,7 +9,7 @@
 
 #define THRES 140000
 
-struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent, int *live_threads, omp_lock_t *writelock, int max_threads)
+struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent)
 {
     if(n == 0)
         return NULL;
@@ -42,16 +42,16 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
         #pragma omp sections nowait
         {
             #pragma omp section
-            node->left = mixed_vp_create(points, left_idxs, n_l, node, live_threads, writelock, max_threads);
+            node->left = mixed_vp_create(points, left_idxs, n_l, node);
             #pragma omp section
-            node->right = mixed_vp_create(points, right_idxs,  n_r, node, live_threads, writelock, max_threads);
+            node->right = mixed_vp_create(points, right_idxs,  n_r, node);
         }
       }
     }
     else
     { // serial recursive call
-      node->left = mixed_vp_create(points, left_idxs, n_l, node, live_threads, writelock, max_threads);
-      node->right = mixed_vp_create(points, right_idxs,  n_r, node, live_threads, writelock, max_threads);
+      node->left = mixed_vp_create(points, left_idxs, n_l, node);
+      node->right = mixed_vp_create(points, right_idxs,  n_r, node);
     }
     return node;
 }
