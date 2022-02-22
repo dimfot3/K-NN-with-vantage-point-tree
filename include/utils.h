@@ -17,6 +17,7 @@ struct ses_args
 {
     char *path;
     int mode;
+    int max_threads;
 };
 
 /**
@@ -249,7 +250,7 @@ void reallocate_tree(struct vp_point *node);
  * @param knn_time elapsed time to search the tree for k neighbors
  * @return void
  */
-void save_times(int mode, int num, int dim, double creation_time, double knn_time);
+void save_times(int mode, int num, int dim, double creation_time, double knn_time, int max_threads);
 
 
 #endif

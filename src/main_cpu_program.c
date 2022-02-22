@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     switch(args.mode)
     {
         case 0:
-            save_times(args.mode, points.num, points.dim, creation_time, knn_time);
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
         case 1:
             //--------------------------------OPENMP----------------------------------------//
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
             if(comp == 1)
                 printf("Parallel validation with sequential were successful.\n");
             reallocate_tree(opmp_root);  //deallocation of openmp created tree
-            save_times(args.mode, points.num, points.dim, creation_time, knn_time);
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
             //--------------------------------END OF OPENMP----------------------------------------//
         case 2:
@@ -104,17 +104,17 @@ int main(int argc, char** argv)
             omp_lock_t writelock;
             omp_init_lock(&writelock);
             gettimeofday(&t0, 0);
-            struct vp_point *mixed_root = mixed_vp_create(&points, idxs,  points.num, NULL, &live_threads, &writelock);
+            struct vp_point *mixed_root = mixed_vp_create(&points, idxs,  points.num, NULL, &live_threads, &writelock, args.max_threads);
             gettimeofday(&t1, 0);
             creation_time = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_usec - t0.tv_usec) / 1000.0;
             struct int_vector pre_arr_mixed;
             read_preorder(mixed_root, 1, &pre_arr_mixed, points.num);
-            printf("Vantage-point tree created with OpenMP in %0.3fms\n", creation_time);
+            printf("Vantage-point tree created with Mixed implementation(Serial/OpenMP with limited threads) in %0.3fms\n", creation_time);
             comp = compare_int_vectors(&pre_arr_mixed, &pre_arr_serial);
             if(comp == 1)
                 printf("Mixed validation with sequential were successful.\n");
             reallocate_tree(mixed_root);  //deallocation of openmp created tree
-            save_times(args.mode, points.num, points.dim, creation_time, knn_time);
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
             //--------------------------------MIXED VERSION----------------------------------------//
     }

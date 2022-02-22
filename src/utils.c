@@ -26,6 +26,11 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
         strcpy(args->path, argv[1]);
         args->mode = atoi(argv[2]);
         printf("Sessios's mode (0:sequential, 1:prallel in cpu, 2:fair work per thread): %d\nPoints path: %s\n", args->mode, args->path);
+        if(argc == 4)
+            args->max_threads = atoi(argv[3]);
+        else
+            args->max_threads = -1;
+        
     }
 }
 
@@ -243,7 +248,7 @@ void print_int_vector(struct int_vector* vec)
     printf("\n");
 }
 
-void save_times(int mode, int num, int dim, double creation_time, double knn_time)
+void save_times(int mode, int num, int dim, double creation_time, double knn_time, int max_threads)
 {
     FILE *fp;
     int file_exists = 0;
@@ -251,8 +256,8 @@ void save_times(int mode, int num, int dim, double creation_time, double knn_tim
         file_exists = 1;
     fp = fopen("results.csv", "a+");
     if(file_exists!=1)
-        fprintf(fp, "mode,num,dim,vp_creation_time,knn_search_time\n");
-    fprintf(fp, "%d,%d,%d,%lf,%lf\n", mode, num, dim, creation_time, knn_time);
+        fprintf(fp, "mode,num,dim,vp_creation_time,knn_search_time,max_threads\n");
+    fprintf(fp, "%d,%d,%d,%lf,%lf,%d\n", mode, num, dim, creation_time, knn_time, max_threads);
     fclose(fp);
 }
 
