@@ -2,13 +2,15 @@
  * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
  * @brief Here is the implementation of Vantage point creation with mixed parallel and serial execution
  **/
-
+#include <omp.h>
 #include <stdlib.h>
 #include <utils.h>
 
-#define thres 100000
 
-struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent)
+#define thres 100000
+#define max_live_threads 1000
+
+struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent, int *live_threads, omp_lock_t *writelock)
 {
     if(n == 0)
         return NULL;
@@ -31,21 +33,25 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
     free(idxs);     //dealocating idxs to avoid dynamic memory corruption as they are not used anymore
     node->parent = parrent;
     node->thresshold = median;
-    if(n * d > thres){ // parallel recursive call
+    if(n * d > thres && live_threads < max_live_threads){ // parallel recursive call
+      omp_set_lock(writelock);
+      (*live_threads)++;
+      omp_unset_lock(writelock);
       #pragma omp parallel
         {
         #pragma omp sections nowait
           {
               #pragma omp section
-              node->left = mixed_vp_create(points, left_idxs, n_l, node);
+              node->left = mixed_vp_create(points, left_idxs, n_l, node, live_threads, writelock);
               #pragma omp section
-              node->right = mixed_vp_create(points, right_idxs,  n_r, node);
+              node->right = mixed_vp_create(points, right_idxs,  n_r, node, live_threads, writelock);
             }
           }
       }
-      else{ // serial recursive call
-        node->left = mixed_vp_create(points, left_idxs, n_l, node);
-        node->right = mixed_vp_create(points, right_idxs,  n_r, node);
+      else
+      { // serial recursive call
+        node->left = mixed_vp_create(points, left_idxs, n_l, node, live_threads, writelock);
+        node->right = mixed_vp_create(points, right_idxs,  n_r, node, live_threads, writelock);
       }
     return node;
 }

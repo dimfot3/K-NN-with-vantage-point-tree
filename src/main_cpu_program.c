@@ -8,10 +8,13 @@
 #include <float.h>
 #include <sys/time.h>
 #include <utils.h>
+#include <omp.h>
 #include <serial_vp_tree.h>
 #include <open_mp_tree.h>
+#include <mixed_tree.h>
 #include <search_knn.h>
 #include <Queue.h>
+
 
 #define VERBOSE 0
 
@@ -94,9 +97,26 @@ int main(int argc, char** argv)
             //--------------------------------END OF OPENMP----------------------------------------//
         case 2:
             //--------------------------------MIXED VERSION----------------------------------------//
-            
-            //--------------------------------MIXED VERSION----------------------------------------//
+            idxs = malloc(sizeof(int)*points.num);
+            for(int i = 0; i < points.num; i++)
+                idxs[i] = i;
+            int live_threads = 1;
+            omp_lock_t writelock;
+            omp_init_lock(&writelock);
+            gettimeofday(&t0, 0);
+            struct vp_point *mixed_root = mixed_vp_create(&points, idxs,  points.num, NULL, &live_threads, &writelock);
+            gettimeofday(&t1, 0);
+            creation_time = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_usec - t0.tv_usec) / 1000.0;
+            struct int_vector pre_arr_mixed;
+            read_preorder(mixed_root, 1, &pre_arr_mixed, points.num);
+            printf("Vantage-point tree created with OpenMP in %0.3fms\n", creation_time);
+            comp = compare_int_vectors(&pre_arr_mixed, &pre_arr_serial);
+            if(comp == 1)
+                printf("Mixed validation with sequential were successful.\n");
+            reallocate_tree(mixed_root);  //deallocation of openmp created tree
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time);
             break;
+            //--------------------------------MIXED VERSION----------------------------------------//
     }
     reallocate_tree(root);  //deallocation of serial created tree
     return 0;

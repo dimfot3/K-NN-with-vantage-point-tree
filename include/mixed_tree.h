@@ -11,4 +11,4 @@
  * @param n the number of points for current itteration
  * @return return the root point for current itteration
  **/
-struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent);
+struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent, int * live_threads, omp_lock_t *writelock);
