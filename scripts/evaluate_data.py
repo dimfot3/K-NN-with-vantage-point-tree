@@ -55,9 +55,9 @@ for i in range(len(files)):
     n, d = data[0:2].astype('int')
     data = data[2:].reshape(n, d)
     kdt = KDTree(data, leaf_size=40, metric='euclidean')
-    for j in range(1,256):
+    for j in range(1,10):
         start = time.time()
-        dist, ind = kdt.query(data, k=min(j, n))
+        dist, ind = kdt.query(data, k=min(256, n))
         end = time.time()
         times = np.append(times, end - start)
     print('.....')
