@@ -168,7 +168,7 @@ float* calculateDistancesParallel(struct points_struct *points, float *pivot, in
 {
     int d = points->dim;
     float* dist_arr = (float*)malloc(sizeof(float) * n);
-    #pragma omp parallel for schedule(dynamic, 1)
+    #pragma omp parallel for
     for(int i = 0; i < n; i++)
     {
         dist_arr[i] = calculate_euk_distance(pivot, &(points->points_arr[idxs[i] * d]), points->dim);

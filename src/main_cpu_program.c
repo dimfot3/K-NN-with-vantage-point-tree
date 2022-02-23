@@ -73,7 +73,6 @@ int main(int argc, char** argv)
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
     //--------------------------------END OF KNN----------------------------------------//
     */
-
     switch(args.mode)
     {
         case 0:
@@ -100,6 +99,7 @@ int main(int argc, char** argv)
             //--------------------------------END OF OPENMP----------------------------------------//
         case 2:
             //--------------------------------MIXED VERSION----------------------------------------//
+            omp_set_nested(1);
             idxs = malloc(sizeof(int)*points.num);
             for(int i = 0; i < points.num; i++)
                 idxs[i] = i;        
