@@ -31,8 +31,6 @@ int main(int argc, char** argv)
     for(int i = 0; i < points.num; i++)
         idxs[i] = i;
 
-    omp_set_num_threads(args.max_threads);
-    omp_set_dynamic(0);
     //--------------------------------SERIAL SECTION----------------------------------------//
     //serial vp creation. When we run in mode 0 its time is saved, when we run in other mode this is used for validation
     struct timeval t0, t1, tk0, tk1;
@@ -73,6 +71,7 @@ int main(int argc, char** argv)
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
     //--------------------------------END OF KNN----------------------------------------//
     */
+            
     switch(args.mode)
     {
         case 0:
@@ -98,7 +97,8 @@ int main(int argc, char** argv)
             break;
             //--------------------------------END OF OPENMP----------------------------------------//
         case 2:
-            //--------------------------------MIXED VERSION----------------------------------------//
+            //--------------------------------MIXED VERSION----------------------------------------//            
+            omp_set_max_active_levels(args.max_threads);
             omp_set_nested(1);
             idxs = malloc(sizeof(int)*points.num);
             for(int i = 0; i < points.num; i++)
