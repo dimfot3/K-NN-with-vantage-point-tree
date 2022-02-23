@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <utils.h>
 #include <omp.h>
+#include <mpi.h>
 #include <serial_vp_tree.h>
 #include <open_mp_tree.h>
 #include <mixed_tree.h>
@@ -49,7 +50,7 @@ int main(int argc, char** argv)
     }
     //------------------------END OF SEQUENTIAL------------------------------------------
 
-    /*
+    
     //--------------------------------KNN SECTION----------------------------------------//
     //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
     int k = MIN(points.num, 256);   //max number of neibhors for each point
@@ -70,7 +71,7 @@ int main(int argc, char** argv)
     knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
     printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
     //--------------------------------END OF KNN----------------------------------------//
-    */
+    
             
     switch(args.mode)
     {
@@ -116,7 +117,45 @@ int main(int argc, char** argv)
             reallocate_tree(mixed_root);  //deallocation of openmp created tree
             save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
-            //--------------------------------MIXED VERSION----------------------------------------//
+            //--------------------------------END OF MIXED VERSION----------------------------------------//
+        case 3:
+            //--------------------------------MPI VERSION----------------------------------------//
+            //MPI basic operations
+            MPI_Init(NULL, NULL);
+            int world_size;
+            MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+            int world_rank;
+            MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+            char processor_name[MPI_MAX_PROCESSOR_NAME];
+            int name_len;
+            MPI_Get_processor_name(processor_name, &name_len);
+            if(world_rank == 0)
+                printf("Name of device: %s, Rank: %d, Total processors: %d \n", processor_name, world_rank, world_size);            
+            
+            omp_set_max_active_levels(args.max_threads);
+            omp_set_nested(1);
+
+            idxs = malloc(sizeof(int)*points.num);
+            for(int i = 0; i < points.num; i++)
+                idxs[i] = i;  
+              
+            gettimeofday(&t0, 0);
+            struct vp_point *mpi_root = NULL;   //implement the mpi 
+            gettimeofday(&t1, 0);
+            creation_time = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_usec - t0.tv_usec) / 1000.0;
+            //validation
+            struct int_vector pre_arr_mpi;
+            read_preorder(mpi_root, 1, &pre_arr_mpi, points.num);
+            printf("Vantage-point tree created with Mixed implementation(Serial/OpenMP with limited threads) in %0.3fms\n", creation_time);
+            comp = compare_int_vectors(&pre_arr_mpi, &pre_arr_serial);
+            if(comp == 1)
+                printf("Mixed validation with sequential were successful.\n");
+            //free resources
+            reallocate_tree(mpi_root);  //deallocation of openmp created tree
+            save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
+            break;
+            //--------------------------------END OF MPI VERSION----------------------------------------//
+
     }
     reallocate_tree(root);  //deallocation of serial created tree
     return 0;

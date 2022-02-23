@@ -5,16 +5,16 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <utils.h>
 #include <math.h>
 #include <unistd.h>
+#include <utils.h>
 
 void parse_arguments(int argc, char** argv, struct ses_args *args)
 {
     
     if(argc < 3)
     {
-        printf("Usage: `./main_cpu_program path mode` where path is the binay file with points and mode 0:sequential, 1:prallel in cpu, 2:fair work per thread\n");
+        printf("Usage: `./main_cpu_program path mode num_thr` where path is the binay file with points and mode 0:sequential, 1:prallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the thread limit\n");
         printf("WARNING! You have not given arguments, so default values path=../data/dt_2_10_3.dat, mode=0 will be used.\n\n");
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, "../data/dt_2_10_3.dat");
@@ -25,7 +25,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, argv[1]);
         args->mode = atoi(argv[2]);
-        printf("Sessios's mode (0:sequential, 1:prallel in cpu, 2:fair work per thread): %d\nPoints path: %s\n", args->mode, args->path);
+        printf("Sessios's mode (0:sequential, 1:prallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp): %d\nPoints path: %s\n", args->mode, args->path);
         if(argc == 4)
             args->max_threads = atoi(argv[3]);
         else
@@ -42,7 +42,7 @@ void read_points(char *path, struct points_struct *points, int verbose)
     fp = fopen(path, "rb");
     if ( fp == NULL )
     {
-        printf( "Error loading the file with paht %s\n",  path) ;
+        printf( "Error loading the file with path %s\n",  path) ;
         exit(0);
     }
     fread(info,sizeof(float),2,fp); 
@@ -192,24 +192,54 @@ void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idx
     }
     //reallocing extra memory space for left and right idxes
     if(n_l > 0)
-        *left_idxs = (int*) realloc(*left_idxs, sizeof(int) * *n_l);
+        *left_idxs = (int*) realloc(*left_idxs, sizeof(int) * (*n_l));
     if(n_r > 0)
-    *right_idxs = (int*) realloc(*right_idxs, sizeof(int) * *n_r);
+    *right_idxs = (int*) realloc(*right_idxs, sizeof(int) * (*n_r));
 }
 
 void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, int n)
 {
     if (node == NULL)
+    {
+        //this saves the null child. This makes it possible to make 1-1 represantation of vantage point tree
+        pre_arr->arr[pre_arr->n] = -1;
+        pre_arr->thres[pre_arr->n++] = -1;
         return;
+    }
+        
     if(root)
     {
-        pre_arr->arr = (int*) malloc(sizeof(struct int_vector) *n);
+        pre_arr->arr = (int*) malloc(sizeof(int) * 2 * n);
+        pre_arr->thres = (float*) malloc(sizeof(float) * 2 * n);
         pre_arr->n = 0;
     }
-    pre_arr->arr[pre_arr->n++] = node->idx;
+    pre_arr->arr[pre_arr->n] = node->idx;
+    pre_arr->thres[pre_arr->n++] = node->thresshold;
     read_preorder(node->left, 0, pre_arr, n);
     read_preorder(node->right, 0, pre_arr, n);
+    //free unecessary space
+    if(root)
+    {
+        pre_arr->arr = (int*) realloc(pre_arr->arr, sizeof(int) * pre_arr->n);
+        pre_arr->thres = (float*) realloc(pre_arr->thres, sizeof(float) * pre_arr->n);
+    }
+        
 }
+
+void preorder_to_tree(struct int_vector* pre_arr, struct vp_point **node, int *idx)
+{
+    if(pre_arr->arr[*idx] == -1)
+    {
+        (*node) = NULL;
+        return;
+    }
+    *node = (struct vp_point*) malloc(sizeof(struct vp_point));
+    (*node)->idx = pre_arr->arr[*idx];
+    (*node)->thresshold = pre_arr->thres[*idx];
+    preorder_to_tree(pre_arr, &((*node)->left), ++(*idx));
+    preorder_to_tree(pre_arr, &((*node)->right), ++(*idx));
+}
+
 
 void reallocate_tree(struct vp_point *node)
 {
@@ -224,13 +254,13 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2)
 {
     if(arr1->n != arr2->n)
     {
-        printf("WARNING! The two vectors are have different dimensions.");
+        printf("WARNING! The two vectors are have different dimensions.\n");
         return 0;
     }
     int same = 1;
     for(int i = 0; i < arr1->n; i++)
     {
-        if(arr1->arr[i] != arr2->arr[i])
+        if(arr1->arr[i] != arr2->arr[i] || abs(arr1->thres[i] - arr2->thres[i]) > 0.01)     //check the idx and the thresshold(here accepts minor percision diffs)
         {
             same = 0;
             break;

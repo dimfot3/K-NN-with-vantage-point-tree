@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+set(CMAKE_C_COMPILER mpicc)
 
 project(knn_w_vantage LANGUAGES C CXX)
 find_package(OpenMP)
@@ -6,7 +7,7 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} -O3 -fopenmp")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -O3")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 
-include_directories(include)
+include_directories(SYSTEM ${MPI_INCLUDE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #basic utilities
 add_library(utils STATIC src/utils.c)
@@ -31,9 +32,13 @@ target_link_libraries(openmp_vp_tree PUBLIC utils)
 add_library(mixed_vp_tree STATIC src/mixed_tree.c)
 target_link_libraries(mixed_vp_tree PUBLIC utils)
 
+#hybrid mpi/openmp implementation
+add_library(hyb STATIC src/hybrid_mpi.c)
+target_link_libraries(hyb PUBLIC ${MPI_C_LIBRARIES} mixed_vp_tree)
+
 #main function for serial, openmp, opencilk versions
 add_executable(main_cpu_program src/main_cpu_program.c)
-target_link_libraries(main_cpu_program utils ser_vp_tree knn_search queue openmp_vp_tree mixed_vp_tree)
+target_link_libraries(main_cpu_program utils ser_vp_tree knn_search queue openmp_vp_tree mixed_vp_tree hyb ${MPI_C_LIBRARIES})
 
 file(GLOB SCRIPTS
   "scripts/*.sh"

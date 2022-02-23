@@ -50,18 +50,20 @@ struct vp_point
     struct vp_point *left;
     struct vp_point *right;
     int idx;
-    int thresshold;
+    float thresshold;
 };
 
 /**
- * @brief this is a C implementation of vector for int
+ * @brief this is a C implementation of vectors and used in preorder represantation
  * 
  * @param arr  pointer array of integers
+ * @param thresh  array of threshold
  * @param n  number of elements
  **/
 struct int_vector
 {
     int *arr;
+    float *thres;
     int n;
 };
 
@@ -207,6 +209,16 @@ void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idx
  * @return void
  */
 void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, int n);
+
+/**
+ * @brief function translate the preorder in node
+ * 
+ * @param pre_arr preorder array
+ * @param node pointer to pointer of the node
+ * @param idx the current idx of pointer
+ * @return void
+ */
+void preorder_to_tree(struct int_vector* pre_arr, struct vp_point **node, int *idx);
 
 /**
  * @brief function that compares two vectors
