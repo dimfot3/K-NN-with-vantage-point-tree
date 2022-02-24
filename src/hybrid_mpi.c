@@ -33,9 +33,15 @@ struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs, i
         node->parent = NULL;
         node->thresshold = median;
         free(idxs); 
+
+        //send right idxs to other node
         MPI_Send(&n_r, 1, MPI_INT, 1, 1, MPI_COMM_WORLD); 
         MPI_Send(right_idxs, n_r, MPI_INT, 1, 1, MPI_COMM_WORLD); 
+
+        //find the left node
         node->left = mixed_vp_create(points, left_idxs, n_l, node);
+
+        //wait the right node in preorder form and tf to tree structure
         struct int_vector preorder;
         MPI_Status stat;
         MPI_Recv(&(preorder.n), 1, MPI_INT, 1, 2, MPI_COMM_WORLD, &stat);
@@ -51,12 +57,17 @@ struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs, i
     }
     else
     {
+        //wait right idxs
         int n_r;
         MPI_Status stat;
         MPI_Recv(&n_r, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat); 
         int *right_idxs = (int*) malloc(sizeof(int) * n_r);
         MPI_Recv(right_idxs, n_r, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat);
+
+        //calculate right node
         struct vp_point *node = mixed_vp_create(points, right_idxs, n_r, NULL);
+
+        //transform the right tree to preorder and send to leader
         struct int_vector preorder;
         read_preorder(node, 1, &preorder, n_r); 
         MPI_Send(&(preorder.n), 1, MPI_INT, 0, 2, MPI_COMM_WORLD); 
