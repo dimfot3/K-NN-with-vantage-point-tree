@@ -29,25 +29,31 @@ int main(int argc, char** argv)
     parse_arguments(argc, argv, &args);
     read_points(args.path, &points, VERBOSE);
     
-    int world_size, world_rank=0, name_len;
+    int world_size=0, world_rank=0, name_len;
 
-    //MPI basic operations
-    MPI_Init(NULL, NULL);
-    
     if(args.mode == 3)
     {
+        //MPI basic operations
+        MPI_Init(NULL, NULL);
         MPI_Comm_size(MPI_COMM_WORLD, &world_size);
         MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
         char processor_name[MPI_MAX_PROCESSOR_NAME];
         MPI_Get_processor_name(processor_name, &name_len);
         if(world_rank == 0)
             printf("Name of device: %s, Rank: %d, Total processors: %d \n", processor_name, world_rank, world_size); 
+        if(world_size != 2)
+        {
+            printf("ERROR! The mpi mode is running only with two processes.\n");
+            exit(-1);
+        }
     }           
     struct timeval t0, t1, tk0, tk1;
     double creation_time, knn_time;
     struct int_vector pre_arr_serial;
     int* idxs;
     struct vp_point *root;
+
+    //!!!This is calculate every time(in mpi mode only in leader) in order to validate correctness
     //--------------------------------SEQUENTIAL SECTION----------------------------------------//
     //serial vp creation. When we run in mode 0 its time is saved, when we run in other mode this is used for validation
     if(world_rank == 0)
@@ -97,6 +103,7 @@ int main(int argc, char** argv)
         case 0:
             save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
+        
         case 1:
             //--------------------------------OPENMP----------------------------------------//
             idxs = (int*) malloc(sizeof(int)*points.num);
@@ -116,6 +123,7 @@ int main(int argc, char** argv)
             save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
             //--------------------------------END OF OPENMP----------------------------------------//
+        
         case 2:
             //--------------------------------MIXED VERSION (Serial and OpenMP)----------------------------------------//            
             omp_set_max_active_levels(args.max_threads);
@@ -137,6 +145,7 @@ int main(int argc, char** argv)
             save_times(args.mode, points.num, points.dim, creation_time, knn_time, args.max_threads);
             break;
             //--------------------------------END OF MIXED VERSION (Serial and OpenMP)----------------------------------------//
+        
         case 3:
             //--------------------------------MPI with OpenMP VERSION----------------------------------------//
             
