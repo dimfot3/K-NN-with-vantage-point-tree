@@ -6,10 +6,12 @@
 #define THRES 140000
 
 
-struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent, int id)
+struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs, int id)
 {
+    //leader process make the first node and send the right to second process
     if(id == 0)
     {
+        int n = points->num;
         if(n == 0)
             return NULL;
         int d = points->dim;
@@ -28,28 +30,38 @@ struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs,  
         //create node
         struct vp_point *node = (struct vp_point*) malloc(sizeof(struct vp_point));
         node->idx = idxs[0];
-        free(idxs);     //dealocating idxs to avoid dynamic memory corruption as they are not used anymore
-        node->parent = parrent;
+        node->parent = NULL;
         node->thresshold = median;
+        free(idxs); 
         MPI_Send(&n_r, 1, MPI_INT, 1, 1, MPI_COMM_WORLD); 
-        MPI_iSend(idxs+1, n_r, MPI_INT, 1, 1, MPI_COMM_WORLD); 
+        MPI_Send(right_idxs, n_r, MPI_INT, 1, 1, MPI_COMM_WORLD); 
         node->left = mixed_vp_create(points, left_idxs, n_l, node);
-        struct int_vector *preorder;
-        //MPI_Recv(test, 128, MPI_CHAR, i, 4444, MPI_COMM_WORLD, &stat); 
-        preorder_to_tree(preorder, &(node->right), 0);
+        struct int_vector preorder;
+        MPI_Status stat;
+        MPI_Recv(&(preorder.n), 1, MPI_INT, 1, 2, MPI_COMM_WORLD, &stat);
+        preorder.arr = (int*) malloc(sizeof(int) * preorder.n);
+        preorder.thres = (float*) malloc(sizeof(float) * preorder.n);
+        node->right = NULL;
+        MPI_Recv(preorder.arr, preorder.n, MPI_INT, 1, 2, MPI_COMM_WORLD, &stat);
+        MPI_Recv(preorder.thres, preorder.n, MPI_FLOAT, 1, 2, MPI_COMM_WORLD, &stat);
+        int idx = 0;
+        preorder_to_tree(&preorder, &(node->right), &idx);
+        node->right->parent = node;   
         return node;
     }
     else
     {
         int n_r;
-        MPI_Status stat; 
+        MPI_Status stat;
         MPI_Recv(&n_r, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat); 
-        int *right_idxs = (int*)malloc(sizeof(int)*n_r);
-        MPI_Recv(right_idxs, n_r, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat); 
+        int *right_idxs = (int*) malloc(sizeof(int) * n_r);
+        MPI_Recv(right_idxs, n_r, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat);
         struct vp_point *node = mixed_vp_create(points, right_idxs, n_r, NULL);
         struct int_vector preorder;
-        read_preorder(node, 1, &preorder, n_r);
-        //MPI_Send(test, 128, MPI_CHAR, i, 4444, MPI_COMM_WORLD, &stat); 
+        read_preorder(node, 1, &preorder, n_r); 
+        MPI_Send(&(preorder.n), 1, MPI_INT, 0, 2, MPI_COMM_WORLD); 
+        MPI_Send(preorder.arr, preorder.n, MPI_INT, 0, 2, MPI_COMM_WORLD); 
+        MPI_Send(preorder.thres, preorder.n, MPI_FLOAT, 0, 2, MPI_COMM_WORLD); 
     }
     return NULL;
 }

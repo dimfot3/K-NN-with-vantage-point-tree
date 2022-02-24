@@ -203,18 +203,18 @@ void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, 
     {
         //this saves the null child. This makes it possible to make 1-1 represantation of vantage point tree
         pre_arr->arr[pre_arr->n] = -1;
-        pre_arr->thres[pre_arr->n++] = -1;
+        pre_arr->thres[(pre_arr->n)++] = -1;
         return;
     }
         
     if(root)
     {
-        pre_arr->arr = (int*) malloc(sizeof(int) * 2 * n);
-        pre_arr->thres = (float*) malloc(sizeof(float) * 2 * n);
+        pre_arr->arr = (int*) malloc(sizeof(int) * n*n);
+        pre_arr->thres = (float*) malloc(sizeof(float) * n*n);
         pre_arr->n = 0;
     }
     pre_arr->arr[pre_arr->n] = node->idx;
-    pre_arr->thres[pre_arr->n++] = node->thresshold;
+    pre_arr->thres[(pre_arr->n)++] = node->thresshold;
     read_preorder(node->left, 0, pre_arr, n);
     read_preorder(node->right, 0, pre_arr, n);
     //free unecessary space
@@ -223,7 +223,6 @@ void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, 
         pre_arr->arr = (int*) realloc(pre_arr->arr, sizeof(int) * pre_arr->n);
         pre_arr->thres = (float*) realloc(pre_arr->thres, sizeof(float) * pre_arr->n);
     }
-        
 }
 
 void preorder_to_tree(struct int_vector* pre_arr, struct vp_point **node, int *idx)
@@ -236,8 +235,10 @@ void preorder_to_tree(struct int_vector* pre_arr, struct vp_point **node, int *i
     *node = (struct vp_point*) malloc(sizeof(struct vp_point));
     (*node)->idx = pre_arr->arr[*idx];
     (*node)->thresshold = pre_arr->thres[*idx];
-    preorder_to_tree(pre_arr, &((*node)->left), ++(*idx));
-    preorder_to_tree(pre_arr, &((*node)->right), ++(*idx));
+    (*idx)++;
+    preorder_to_tree(pre_arr, &((*node)->left), idx);
+    (*idx)++;
+    preorder_to_tree(pre_arr, &((*node)->right), idx);
 }
 
 

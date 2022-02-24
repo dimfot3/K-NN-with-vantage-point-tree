@@ -9,6 +9,7 @@
  * @param points  the structure for points
  * @param idxs  the idxs of points for current iteration
  * @param n the number of points for current itteration
+ * @param id the mpi id
  * @return return the root point for current itteration
  **/
-struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs,  int n, struct vp_point* parrent);
+struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs, int id);

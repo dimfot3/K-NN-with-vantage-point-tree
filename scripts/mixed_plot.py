@@ -25,7 +25,8 @@ for i in range(len(datasets)):
 
 plt.title('Mixed Limited version vs Simple OpenMP', fontsize=20)
 plt.legend(fontsize=18)
-plt.xlabel('Number of maximum threads', fontsize=18)
+plt.xlim([1,8])
+plt.xlabel('maximum live threads', fontsize=18)
 plt.ylabel('Execution time(ms)', fontsize=18)
 plt.show()
 
