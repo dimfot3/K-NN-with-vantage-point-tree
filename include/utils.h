@@ -11,7 +11,7 @@
 /**
  * @brief this is the basic structure session arguments
  * @param path char pointer to data path
- * @param mode 0:sequential, 1:prallel in cpu, 2:fair work per thread
+ * @param mode 0:sequential, 1:parallel in cpu, 2:fair work per thread
  **/
 struct ses_args
 {
@@ -39,7 +39,7 @@ struct points_struct
  * @brief this is the basic structure vantage point tree
  * 
  * @param left  pointer to parent node
- * @param left  pointer to left child (for points with distance less or equal than median)
+ * @param left  pointer to left child (for points with distance smaller or equal than median)
  * @param right pointer to right child (for points with distance bigger than median)
  * @param idx the idx to original array
  * @param thesshold the median of left and right childs
@@ -232,7 +232,7 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2);
 /**
  * @brief function that prints an int vector
  * 
- * @param vec vecttor of intergers to print
+ * @param vec vector of intergers to print
  * @return void
  */
 void print_int_vector(struct int_vector* vec);
