@@ -1,6 +1,6 @@
 /**
  * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
- * @brief Here is the implementation of Vantage point creation with mixed parallel and serial execution
+ * @brief Here is the implementation of Vantage point creation with hybrid parallel and serial execution
  **/
 
 /**
