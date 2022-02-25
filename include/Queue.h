@@ -11,7 +11,7 @@
  * @brief this is a priority queue implementation
  * 
  * @param idx  the data of the queue slot, idx of a point
- * @param priority the priority distance, lower distance inticate higher priority
+ * @param priority the priority distance, smaller distance inticates higher priority
  * @param next pointer to the next queue slot
  **/
 struct queue_node
@@ -31,7 +31,7 @@ struct queue_node* new_node(int d, float p);
 
 
 /**
- * @brief removes the node with lower priority(higher distance) and return then new head
+ * @brief removes the node with lower priority(bigger distance) and return then new head
  * @param head pointer to pointer of the starting node of the queue
  * @param return the new head
  **/
@@ -82,7 +82,7 @@ void queue_to_arr(struct queue_node* head, int* array, int k);
 void free_queue(struct queue_node** head);
 
 /**
- * @brief return the top element with the smaller priority
+ * @brief return the top element with the lower priority
  * 
  * @param head pointer to pointer of the starting node of the queue
  * @return the top element 
