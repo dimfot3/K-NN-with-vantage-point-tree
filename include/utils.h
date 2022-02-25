@@ -25,7 +25,7 @@ struct ses_args
  * 
  * @param num  number of points
  * @param dim dimension of points
- * @param points_arr float arr that contains the points in contigius form
+ * @param points_arr float arr that contains the points in contiguous form
  **/
 struct points_struct
 {
