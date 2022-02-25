@@ -14,7 +14,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
     
     if(argc < 3)
     {
-        printf("Usage: `./main_cpu_program path mode num_thr` where path is the binay file with points and mode 0:sequential, 1:prallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the thread limit\n");
+        printf("Usage: `./main_cpu_program path mode num_thr` where path is the binay file with points and mode 0:sequential, 1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the thread limit\n");
         printf("WARNING! You have not given arguments, so default values path=../data/dt_2_10_3.dat, mode=0 will be used.\n\n");
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, "../data/dt_2_10_3.dat");
@@ -25,7 +25,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, argv[1]);
         args->mode = atoi(argv[2]);
-        printf("Sessios's mode (0:sequential, 1:prallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp): %d\nPoints path: %s\n", args->mode, args->path);
+        printf("Sessios's mode (0:sequential, 1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp): %d\nPoints path: %s\n", args->mode, args->path);
         if(argc == 4)
             args->max_threads = atoi(argv[3]);
         else
