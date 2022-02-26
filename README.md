@@ -30,7 +30,7 @@ Alternativly you can download some samples from the README.md inside the data fo
 ## Testing
 An important aspect of this project were testing. We implement the VP creation in python following similar architecture like Matlab script provided by professor of the subject (only difference we pick the first and not the last element ad vp point). We also use skelarn's implementation of KNN and so we can compare the preorder form of C and the KNN elements with pythons. All the parallel implemenations are compared with the simple sequential. 
 
-As mentioned for the basic utilities there are Google Tests, so with blackbox technique with known imput/output we can assume correctness.
+As mentioned for the basic utilities there are Google Tests and the utilities were written in Test Driven philosophy. Ofcourse they are not proof of correctness but they helped us develop easier and faster the whole project.
 
 ## Instructions for code reviewers
 For easing and deep understanding of this project it is recommended to follow the steps with that order:
