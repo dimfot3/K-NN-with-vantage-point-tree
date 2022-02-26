@@ -11,24 +11,29 @@ extern "C"
 }
 
 /**
- * @brief this tests the point loader with loading a known set of points
+ * @brief this tests the point loader with loading a known set of points. WARNING: If this tests output fail check the path to data!
  **/
 TEST(load_points, t1) {
     struct points_struct points;
-    char path[] = "../../data/dt_2_10_3.dat";
-    read_points(path, &points, 0);
-        float gr_arr[] = {-241.9691,     139.0561,     268.2338,   -1228.0676,    -101.13516,
-                            -664.4158,   -2442.0344,     -96.27045,   -484.76395,    408.71097,
-                            -2087.13 ,      849.50684,  -986.0619 ,   2019.4124,    -680.8635,
-                            -822.56335,   -394.05826,    935.4332,   -1435.3661,     910.64056,
-                            2564.1982,    -922.347,     1724.9014,     113.36945,   -481.6732,
-                            -31.877008,  -624.2047,     440.09164,   -151.25363,   -995.9362};
+    char path[] = "../../tests/data/dt_2_10_3.dat";
+    read_points(path, &points, 1);
+    float gr_arr[] = {369.21, -454.55, -83.44, 
+                    -1688.57, -853.15, 497.05, 
+                    892.56, -564.89, 414.00, 
+                    1401.83, 465.88, -375.56, 
+                    1218.25, -39.79, 907.43, 
+                    265.23, 280.28, -633.60,
+                    -150.06, -493.86, 610.72, 
+                    1204.43, -431.29, 359.60, 
+                    -523.36, 1265.77, -124.49, 
+                    1485.53, 1137.91, -1208.99 };
     
-    bool valid = false;
-    float tolerance = 0.000001;
+    bool valid = true;
+    float tolerance = 0.01;
+    if(points.num !=10 || points.dim != 3)
+        valid = false;
     for(int i = 0; i < points.num*points.dim; i++)
     {
-        valid = true;
         if(abs(points.points_arr[i] - gr_arr[i]) > tolerance)
         {
             valid = false;

@@ -47,7 +47,7 @@ void read_points(char *path, struct points_struct *points, int verbose)
     if ( fp == NULL )
     {
         printf( "Error loading the file with path %s\n",  path) ;
-        exit(0);
+        exit(-1);
     }
     fread(info,sizeof(float),2,fp); 
     
