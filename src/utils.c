@@ -14,7 +14,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
     
     if(argc < 3)
     {
-        printf("\nUsage: `./main_cpu_program <path> <mode> <num_thr> <knn_bool>` where path is the binay file with points and mode 0:sequential,\n1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the live threads limit,\n knn_bool is a bool(1 or 0) variable to execute or not the KNN (NOTE: for big datasets this may take take some time.)\n");
+        printf("\nUsage: `./main_cpu_program <path> <mode> <num_lev> <knn_bool>` where path is the binay file with points and mode 0:sequential,\n1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_lev is the maximum active levels of parallelism,\n knn_bool is a bool(1 or 0) variable to execute or not the KNN (NOTE: for big datasets this may take take some time.)\n");
         printf("\nWARNING! You have not given arguments, so default values path=../data/dt_2_10_3.dat, mode=0 will be used.\n\n");
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, "../data/dt_2_10_3.dat");

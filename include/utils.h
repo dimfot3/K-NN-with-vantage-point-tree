@@ -172,7 +172,7 @@ void swap(float* a, float* b);
  * @param vp vantage point
  * @param idxs idxs of points to get the distances
  * @param n number of points
- * @return void
+ * @return float pointer to the distances
  */
 float* calculateDistances(struct points_struct *points, float *pivot, int* idxs, int n);
 
@@ -183,7 +183,7 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
  * @param vp vantage point
  * @param idxs idxs of points to get the distances
  * @param n number of points
- * @return void
+ * @return float pointer to the distances
  */
 float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n);
 
