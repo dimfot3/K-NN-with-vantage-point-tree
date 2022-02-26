@@ -48,8 +48,8 @@ struct vp_point* mixed_vp_create(struct points_struct* points, int* idxs,  int n
         }
       }
     }
-    else
-    { // serial recursive call
+    else // serial recursive call
+    {
       node->left = mixed_vp_create(points, left_idxs, n_l, node);
       node->right = mixed_vp_create(points, right_idxs,  n_r, node);
     }

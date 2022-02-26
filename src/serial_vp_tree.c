@@ -1,6 +1,6 @@
 /**
  * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
- * @brief Here are the implementation of serial vp tree creating utilities
+ * @brief Here are the implementation of sequential vp tree creation
  **/
 #include <stdlib.h>
 #include <utils.h>

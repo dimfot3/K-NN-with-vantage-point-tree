@@ -1,6 +1,6 @@
 /**
  * Authors: Fotiou Dimitrios(9650), Andreas Eleutheriadis(9649)
- * @brief Here is the main program for knn implementation with vantage tree
+ * @brief Here is the main program from which exery feature of this project can run
  **/
 
 #include <stdlib.h>
@@ -31,9 +31,9 @@ int main(int argc, char** argv)
     
     int world_size=0, world_rank=0, name_len;
 
+    //the following block is running only in mode=3 (Hybrid MPI) as it contains MPI basic operations
     if(args.mode == 3)
     {
-        //MPI basic operations
         MPI_Init(NULL, NULL);
         MPI_Comm_size(MPI_COMM_WORLD, &world_size);
         MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -47,15 +47,16 @@ int main(int argc, char** argv)
             exit(-1);
         }
     }           
+
     struct timeval t0, t1, tk0, tk1;
     double creation_time, knn_time;
     struct int_vector pre_arr_serial;
     int* idxs;
     struct vp_point *root;
 
-    //!!!This is calculate every time(in mpi mode only in leader) in order to validate correctness
+    //!!!This is calculate every time (in mpi mode only in leader) in order to validate correctness of parallel versions
     //--------------------------------SEQUENTIAL SECTION----------------------------------------//
-    //serial vp creation. When we run in mode 0 its time is saved, when we run in other mode this is used for validation
+    //serial vp creation. When we run in mode 0 its time is saved
     if(world_rank == 0)
     {
         idxs = malloc(sizeof(int)*points.num);
@@ -75,28 +76,30 @@ int main(int argc, char** argv)
     }
     //------------------------END OF SEQUENTIAL------------------------------------------
 
-    /*
-    //--------------------------------KNN SECTION----------------------------------------//
-    //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
-    int k = MIN(points.num, 256);   //max number of neibhors for each point
-    int* total_neibs = (int*) malloc(sizeof(int) * k * points.num);
-    gettimeofday(&tk0, 0);
-
-    #pragma omp parallel for schedule(dynamic, 1)
-    for(int i = 0; i < points.num; i++)
+    //NOTE: this for big datasets takes some time
+    if(args.knn_bool == 1)
     {
-        float tau = FLT_MAX;
-        struct queue_node *queue_neibs = NULL;
-        knn_search(root, &points, i, k, &tau, &queue_neibs);
-        queue_to_arr(queue_neibs, total_neibs + i * k, k);
-        free_queue(&queue_neibs);
+        //--------------------------------KNN SEARCH----------------------------------------//
+        //finding all kneigbors and saving the idxs serial [n11,n12,...,n21,...n2k...,nkk]
+        int k = MIN(points.num, 256);   //max number of neibhors for each point
+        int* total_neibs = (int*) malloc(sizeof(int) * k * points.num);
+        gettimeofday(&tk0, 0);
+
+        #pragma omp parallel for schedule(dynamic, 1)
+        for(int i = 0; i < points.num; i++)
+        {
+            float tau = FLT_MAX;
+            struct queue_node *queue_neibs = NULL;
+            knn_search(root, &points, i, k, &tau, &queue_neibs);
+            queue_to_arr(queue_neibs, total_neibs + i * k, k);
+            free_queue(&queue_neibs);
+        }
+        gettimeofday(&tk1, 0);
+        save_knn(total_neibs, k * points.num);
+        knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
+        printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
+        //--------------------------------END OF KNN SEARCH----------------------------------------//
     }
-    gettimeofday(&tk1, 0);
-    save_knn(total_neibs, k * points.num);
-    knn_time = (tk1.tv_sec - tk0.tv_sec) * 1000.0 + (tk1.tv_usec - tk0.tv_usec) / 1000.0;
-    printf("K-NN task: %d nearest neighbors for each point calculated in %0.3fms\n", k,  knn_time);
-    //--------------------------------END OF KNN----------------------------------------//
-    */
             
     switch(args.mode)
     {
@@ -148,7 +151,6 @@ int main(int argc, char** argv)
         
         case 3:
             //--------------------------------MPI with OpenMP VERSION----------------------------------------//
-            
             omp_set_max_active_levels(args.max_threads);
             omp_set_nested(1);
 
@@ -177,7 +179,9 @@ int main(int argc, char** argv)
             break;
             //--------------------------------END OF MPI with OpenMP VERSION----------------------------------------//
     }
+
     if(world_rank == 0)
-        reallocate_tree(root);  //deallocation of serial created tree
+        reallocate_tree(root);  //deallocation of sequential created tree
+    
     return 0;
 }

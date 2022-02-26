@@ -8,7 +8,6 @@
  * 
  * @param points  the structure for points
  * @param idxs  the idxs of points for current iteration
- * @param n the number of points for current iteration
  * @param id the mpi id
  * @return return the root point for current iteration
  **/

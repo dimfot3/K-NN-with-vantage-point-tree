@@ -65,7 +65,7 @@ void push(struct queue_node** head, int d, float p);
 
 
 /**
- * @brief queue to array
+ * @brief saves a queue to an array
  * 
  * @param head pointer of the start of the queue
  * @param array where to save the data of queue
@@ -74,19 +74,19 @@ void push(struct queue_node** head, int d, float p);
 void queue_to_arr(struct queue_node* head, int* array, int k);
 
 /**
- * @brief free the queue
- * 
- * @param head pointer to pointer of the starting node of the queue
- * @return void
- **/
-void free_queue(struct queue_node** head);
-
-/**
  * @brief return the top element with the lower priority
  * 
  * @param head pointer to pointer of the starting node of the queue
  * @return the top element 
  **/
 struct queue_node* top(struct queue_node** head);
+
+/**
+ * @brief free the queue
+ * 
+ * @param head pointer to pointer of the starting node of the queue
+ * @return void
+ **/
+void free_queue(struct queue_node** head);
 
 #endif

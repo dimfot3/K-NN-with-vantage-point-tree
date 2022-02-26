@@ -8,7 +8,7 @@
 
 struct vp_point* hybrid_mpi_vp_create(struct points_struct* points, int* idxs, int id)
 {
-    //leader process make the first node and send the right to second process
+    //leader process creates the first node and send the right to second process
     if(id == 0)
     {
         int n = points->num;

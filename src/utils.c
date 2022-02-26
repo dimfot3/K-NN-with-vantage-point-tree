@@ -14,8 +14,8 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
     
     if(argc < 3)
     {
-        printf("Usage: `./main_cpu_program path mode num_thr` where path is the binay file with points and mode 0:sequential, 1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the thread limit\n");
-        printf("WARNING! You have not given arguments, so default values path=../data/dt_2_10_3.dat, mode=0 will be used.\n\n");
+        printf("\nUsage: `./main_cpu_program <path> <mode> <num_thr> <knn_bool>` where path is the binay file with points and mode 0:sequential,\n1:parallel in cpu, 2:mixed serial/parallel with limits 3: hybrid mpi/openmp and num_thr is the live threads limit,\n knn_bool is a bool(1 or 0) variable to execute or not the KNN (NOTE: for big datasets this may take take some time.)\n");
+        printf("\nWARNING! You have not given arguments, so default values path=../data/dt_2_10_3.dat, mode=0 will be used.\n\n");
         args->path = (char*) malloc(sizeof(char)*50);
         strcpy(args->path, "../data/dt_2_10_3.dat");
         args->mode = 0;
@@ -30,13 +30,17 @@ void parse_arguments(int argc, char** argv, struct ses_args *args)
             args->max_threads = atoi(argv[3]);
         else
             args->max_threads = -1;
+        if(argc == 5)
+            args->knn_bool = atoi(argv[4]);
+        else
+            args->knn_bool = 0;
         
     }
 }
 
 void read_points(char *path, struct points_struct *points, int verbose)
 {
-    //opten a file that containes the points
+    //open a file that containes the points
     FILE *fp;
     float info[2];
     fp = fopen(path, "rb");
@@ -261,7 +265,7 @@ int compare_int_vectors(struct int_vector* arr1, struct int_vector* arr2)
     int same = 1;
     for(int i = 0; i < arr1->n; i++)
     {
-        if(arr1->arr[i] != arr2->arr[i] || abs(arr1->thres[i] - arr2->thres[i]) > 0.01)     //check the idx and the thresshold(here accepts minor percision diffs)
+        if(arr1->arr[i] != arr2->arr[i] || abs(arr1->thres[i] - arr2->thres[i]) > 0.01)     //check the idx and the thresshold (here accepts minor percision diffs)
         {
             same = 0;
             break;

@@ -12,16 +12,18 @@
  * @brief this is the basic structure session arguments
  * @param path char pointer to data path
  * @param mode 0:sequential, 1:parallel in cpu, 2:fair work per thread
+ * @param knn_bool 0:do not execute KNN search, 1:execute KNN search
  **/
 struct ses_args
 {
     char *path;
     int mode;
     int max_threads;
+    int knn_bool;
 };
 
 /**
- * @brief this is the basic structure for n nd points
+ * @brief this is the basic structure for n d-dimennsion points
  * 
  * @param num  number of points
  * @param dim dimension of points
@@ -38,11 +40,11 @@ struct points_struct
 /**
  * @brief this is the basic structure vantage point tree
  * 
- * @param left  pointer to parent node
+ * @param parent  pointer to parent node
  * @param left  pointer to left child (for points with distance smaller or equal than median)
  * @param right pointer to right child (for points with distance bigger than median)
  * @param idx the idx to original array
- * @param thesshold the median of left and right childs
+ * @param thesshold the median of left and right points' distance
  **/
 struct vp_point
 {
@@ -54,7 +56,7 @@ struct vp_point
 };
 
 /**
- * @brief this is a C implementation of vectors and used in preorder represantation
+ * @brief this is a C implementation of vectors used in preorder represantation.
  * 
  * @param arr  pointer array of integers
  * @param thresh  array of threshold
@@ -81,6 +83,7 @@ void parse_arguments(int argc, char** argv, struct ses_args *args);
  * 
  * @param path path to binary file
  * @param points basic structure that hold the points
+ * @param verbose a bool variable that activates or not some prints for dubgging perposes
  * @return void
  **/
 void read_points(char *path, struct points_struct *points, int verbose);
@@ -97,16 +100,16 @@ void print_points(struct points_struct *points);
 /**
  * @brief prints a specific point
  * 
- * @param p point pointer
+ * @param p pointer to the point
  * @param d dimension of point
  * @return void
  **/
 void print_point(float* p, int d);
 
 /**
- * @brief this functions free the allocated memory
+ * @brief this functions free the allocated memory of a structrue tree
  * 
- * @param root the pointer to the root vp point
+ * @param root the pointer to the root vp of vp-tree
  **/
 void free_vp_tree(struct vp_point *root);
 
@@ -185,7 +188,7 @@ float* calculateDistances(struct points_struct *points, float *pivot, int* idxs,
 float* calculateDistancesParallel(struct points_struct *points, float *pivot, int* idxs, int n);
 
 /**
- * @brief split the idxs less and more than median
+ * @brief split the idxs less and more than median and used in vantage point creation
  * 
  * @param idxs pointer to idxs
  * @param dists_arr pointer to array of distances
@@ -200,7 +203,8 @@ float* calculateDistancesParallel(struct points_struct *points, float *pivot, in
 void split_idxs(int* idxs, float* dists_arr, int n, float median, int **left_idxs, int **right_idxs, int *n_l, int *n_r);
 
 /**
- * @brief function that reads binary tree in preorder and saves them in int_vector struct
+ * @brief function that reads binary tree in preorder and saves them in int_vector struct. In order to get 1-1 represantation 
+ * we also save the NULL childs
  * 
  * @param node pointer to the node of tree
  * @param root this is a c boolean 0:node, 1:root
@@ -213,7 +217,7 @@ void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, 
 /**
  * @brief function translate the preorder in node
  * 
- * @param pre_arr preorder array
+ * @param pre_arr preorder array in form of int_vector struct
  * @param node pointer to pointer of the node
  * @param idx the current idx of pointer
  * @return void
@@ -221,7 +225,7 @@ void read_preorder(struct vp_point *node, int root, struct int_vector* pre_arr, 
 void preorder_to_tree(struct int_vector* pre_arr, struct vp_point **node, int *idx);
 
 /**
- * @brief function that compares two vectors
+ * @brief function that compares two vectors. It compares both the idx and the thresshold saved in struct int_vector
  * 
  * @param arr1 first array
  * @param arr2 second array
@@ -241,6 +245,7 @@ void print_int_vector(struct int_vector* vec);
  * @brief function that saves the knn to a file
  * 
  * @param neibs the array of neibor idxs
+ * @param k the number of total neighbors to save
  * @return void
  */
 void save_knn(int *neibs, int k);
@@ -248,7 +253,7 @@ void save_knn(int *neibs, int k);
 /**
  * @brief this functions reallocates the tree
  * 
- * @param node an node of the tree
+ * @param node pointer to an entry node of the tree
  * @return void
  */
 void reallocate_tree(struct vp_point *node);
@@ -261,6 +266,7 @@ void reallocate_tree(struct vp_point *node);
  * @param dim the dimension of points
  * @param creation_time elpased time to create the vp tree
  * @param knn_time elapsed time to search the tree for k neighbors
+ * @param max_threads the maximum live threads. This used in mode 2 and 3.
  * @return void
  */
 void save_times(int mode, int num, int dim, double creation_time, double knn_time, int max_threads);
