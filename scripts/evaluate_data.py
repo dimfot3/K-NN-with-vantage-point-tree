@@ -5,6 +5,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import KDTree
 import time
 import glob, os
+
 def create_vantage_tree(orig_points, idxs):
     n = len(idxs)
     if (n == 0):
@@ -31,37 +32,23 @@ def create_vantage_tree(orig_points, idxs):
 
 
 
-"""
+file = '../data/dt_2_400_200.dat'
+data = np.fromfile(f'../data/{file}', dtype='float32')
+n, d = data[0:2].astype('int')
+data = data[2:].reshape(n, d)
 
 
-idxs = np.arange(0, n, dtype=int)
+#Vantage point tree
+idxs = np.array(range(0, n))
+root = create_vantage_tree(data, idxs)
+print(root)
+print(root.preorder)
 
-tree = create_vantage_tree(data, idxs)
+#KNN
+kdt = KDTree(data, leaf_size=40, metric='euclidean')
+dist, ind = kdt.query(data, k=min(256, n))
 
-pre_order = np.array([x.value for x in tree.preorder], dtype='int32')
-real_pre = np.fromfile('./preorder.txt', sep=' ', dtype=int).reshape(1,-1)[0]
-print(f'VP tree: {(pre_order == real_pre).all()}')
-"""
-
-files = []
-os.chdir("../data/")
-for file in glob.glob("*.dat"):
-    files.append(file)
-
-times = np.array([], dtype=float)
-print(files)
-for i in range(len(files)):
-    data = np.fromfile(f'../data/{files[i]}', dtype='float32')
-    n, d = data[0:2].astype('int')
-    data = data[2:].reshape(n, d)
-    kdt = KDTree(data, leaf_size=40, metric='euclidean')
-    for j in range(1,10):
-        start = time.time()
-        dist, ind = kdt.query(data, k=min(256, n))
-        end = time.time()
-        times = np.append(times, end - start)
-    print('.....')
-print(times)
+print(ind)
 
 
 

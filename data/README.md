@@ -1,17 +1,7 @@
 ## data folder
 
-Here you can place the data used to execute this project. You can download them from ...
+Here you can place the data used to execute this project. There are two option to find the data.
+1. You can create them following the instructions in scripts folder OR
+2. You can download some samples from the url: ``https://drive.google.com/file/d/1wzwBYqBVDzDDZNHI38Y8gcxwLJUbfEC8/view?usp=sharing`` (~650MB).Note that these are small samples and for practical reason bigger datasets are easier to be created locally.
 
-link for uni var n:https://drive.google.com/file/d/1AxasKTu2Kd39KG_8RozHASmXPDt5FcqP/view?usp=sharing  
-link for uni var d:https://drive.google.com/file/d/15qhfCtb9NwOxA86Exy5EPylP2KajMk88/view?usp=sharing  
-link for norm var n:https://drive.google.com/file/d/11wtEDNs8QEmNlGW4caEwhp3Efwbi9bKu/view?usp=sharing  
-link for norm var d:https://drive.google.com/file/d/1B-HOoAcEQDnGk0ZqTzpTpe2zHmXAGjeM/view?usp=sharing  
-link for exp var n:https://drive.google.com/file/d/1v17dxOD1CoeFeo1-OZzeIdY2o_ylhbTM/view?usp=sharing  
-link for exp var d:https://drive.google.com/file/d/1MmAI7q8EyFOWrST5sAyU08wVXCSxoZgV/view?usp=sharing  
-link for mixed test: https://drive.google.com/file/d/17N6WJtvsok5Ubtvi--8Xa51f14ylY8UC/view?usp=sharing
-
-How to download (PUT ID in 'FILEID')
-1. run ```wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=17N6WJtvsok5Ubtvi--8Xa51f14ylY8UC' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=17N6WJtvsok5Ubtvi--8Xa51f14ylY8UC" -O data && rm -rf /tmp/cookies.txt ```
-2. unzip data
-3. rm -rf data
 
