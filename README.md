@@ -39,4 +39,3 @@ For easing and deep understanding of this project it is recommended to follow th
 3. start code reviewing with main program, the base of all project.
 4. Check the correctness of each implemntation by opening both the .c and .h. In header there are comments in fomral format and you can read each function's description in VS code by puting the cursor upon the function.
 5. To run the project, follow the How to build & run section.
-6. For those who test on cluster there is a sample script that can be used.
