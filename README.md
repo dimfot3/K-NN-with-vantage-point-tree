@@ -17,7 +17,7 @@ In order to build folow the instructions
 4. Run: <br>
 i. Sequential, Simple OpenMP, Limited OpenMP: ``./main_program <data> <mode> <limit of threads>`` <br>
 ii. MPI with OpenMP version ``mpirun -np 2 main_program <data> 3 <limit of threads>``,
-<br> where ``<data>`` is the path the the dataset of points, ``<mode>`` is the 0 for sequential, 1: for simple OpenMP, 2: for optimized OpenMP/Sequential and ``<limit of threads>`` is used in 2 and 3 mode.
+<br> where ``<data>`` is the path the the dataset of points, ``<mode>`` is the 0 for sequential, 1: for simple OpenMP, 2: for optimized OpenMP/Sequential and ``<limit of threads>`` is used in 2 and 3 mode and its actually a limit to prallel levels.
 5. (Optional) You can configure the project with Google Tests running ``cmake -DBUILD_TESTING=ON ..`` , then ``make`` to compile and ``make test`` to run unit tests on basic utilites
 
 Alternativle to build and run some tests you can see the ``demo_script.sh`` inside the scripts folder. If you also have download the sample scripts inside the data folder,as mentioned below (after unzip you should move all the .dat inside the data folder), you can also execute the demo script.
